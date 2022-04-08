@@ -23,4 +23,16 @@ jobs:
         distribution: 'temurin'
         cache: maven
     - name: Build with Maven
-      run: mvn -B package --file pom.xml
+      run:
+        # Installing rvm
+        curl -sSL https://get.rvm.io | bash -s stable
+
+        # Prepare environment as described in
+        # https://github.com/apache/storm/blob/master/DEVELOPER.md#build-the-code-and-run-the-tests
+        rvm use 2.4.2 --install
+        nvm install 8.9.3
+        nvm use 8.9.3
+
+        # mvn -B package --file pom.xml
+        # Build project
+        mvn -B clean verify
