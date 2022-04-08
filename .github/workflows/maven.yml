@@ -25,11 +25,15 @@ jobs:
           distribution: 'temurin'
           cache: maven
 
-      - name: Configure RVM (Ruby enVironment Manager)
-        run: curl -sSL https://get.rvm.io | bash -s stable && rvm use 2.4.2 --install
+      - name: Configure Ruby
+        uses: actions/setup-ruby@v1
+        with:
+          ruby-version: 2.4.2
 
-      - name: Configure NVM (Node enVironment Manager)
-        run: nvm install 8.9.3 && nvm use 8.9.3
+      - name: Configure NodeJS
+        uses: actions/setup-node@v3
+        with:
+          node-version: 8.9.3
 
       - name: Build with Maven
         run: mvn -B clean verify
