@@ -15,24 +15,21 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v3
-    - name: Set up JDK 11
-      uses: actions/setup-java@v3
-      with:
-        java-version: '11'
-        distribution: 'temurin'
-        cache: maven
-    - name: Build with Maven
-      run:
-        # Installing rvm
-        curl -sSL https://get.rvm.io | bash -s stable
+      - name: Checkout
+        uses: actions/checkout@v3
 
-        # Prepare environment as described in
-        # https://github.com/apache/storm/blob/master/DEVELOPER.md#build-the-code-and-run-the-tests
-        rvm use 2.4.2 --install
-        nvm install 8.9.3
-        nvm use 8.9.3
+      - name: Set up JDK 11
+        uses: actions/setup-java@v3
+        with:
+          java-version: '11'
+          distribution: 'temurin'
+          cache: maven
 
-        # mvn -B package --file pom.xml
-        # Build project
-        mvn -B clean verify
+      - name: Configure RVM (Ruby enVironment Manager)
+        run: curl -sSL https://get.rvm.io | bash -s stable && rvm use 2.4.2 --install
+
+      - name: Configure NVM (Node enVironment Manager)
+        run: nvm install 8.9.3 && nvm use 8.9.3
+
+      - name: Build with Maven
+        run: mvn -B clean verify
