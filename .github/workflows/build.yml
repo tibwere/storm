@@ -1,4 +1,4 @@
-name: Build Storm and run Unit tests
+name: Build Storm and run unit tests
 
 on:
   push:
@@ -35,11 +35,6 @@ jobs:
         with:
           node-version: 8.9.3
 
-      - name: Configure Python (v. 2.x)
-        uses: actions/setup-python@v3
-        with:
-          python-version: '2.x'
-
       - name: Configure Python (v. 3.x)
         uses: actions/setup-python@v3
         with:
@@ -49,7 +44,10 @@ jobs:
         run: sudo apt-get install -y libssl-dev
 
       - name: Install Mock Library with pip
-        run: pip2 install mock && pip3 install mock
+        run: pip install mock
 
-      - name: Build storm
-        run: /bin/bash ./dev-tools/travis/travis-install.sh `pwd`
+      - name: Install storm-shaded-deps
+        run: mvn clean install --batch-mode -pl storm-shaded-deps -am
+
+      - name: Install storm (complete)
+        run: mvn clean install -DskipTests -Pnative,examples,externals -pl '!storm-shaded-deps' --batch-mode
