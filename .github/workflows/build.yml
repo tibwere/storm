@@ -20,7 +20,11 @@ jobs:
         with:
           java-version: '11'
           distribution: 'temurin'
-          cache: maven
+
+      - name: Set up Maven version
+        uses: stCarolas/setup-maven@v4.3
+        with:
+          maven-version: 3.6.3
 
       - name: Cleanup cache (see https://github.com/tibwere/storm/blob/master/.travis.yml#L32)
         run: rm -rf $HOME/.m2/repository/org/apache/storm
