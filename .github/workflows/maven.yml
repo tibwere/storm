@@ -45,6 +45,9 @@ jobs:
         with:
           python-version: '3.x'
 
+      - name: Install libssl-dev
+        run: sudo apt-get install -y libssl-dev
+
       - name: Install Mock Library with pip
         run: pip install mock
 
