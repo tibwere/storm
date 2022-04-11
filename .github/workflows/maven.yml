@@ -35,5 +35,11 @@ jobs:
         with:
           node-version: 8.9.3
 
+      - name: Configure Python and install mock library
+        uses: actions/setup-python@v3
+        with:
+          python_version: [ '3.x', '2.x' ]
+        run: pip install mock
+
       - name: Build with Maven
         run: mvn -B clean verify
