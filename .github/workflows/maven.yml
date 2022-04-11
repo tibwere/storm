@@ -38,7 +38,7 @@ jobs:
       - name: Configure Python
         uses: actions/setup-python@v3
         with:
-          python_version: [ '3.x', '2.x' ]
+          python-version: [ '3.x', '2.x' ]
 
       - name: Install Mock Library with pip
         run: pip install mock
