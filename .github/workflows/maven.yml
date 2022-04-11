@@ -35,10 +35,15 @@ jobs:
         with:
           node-version: 8.9.3
 
-      - name: Configure Python
+      - name: Configure Python (v. 2.x)
         uses: actions/setup-python@v3
         with:
-          python-version: ['3.x', '2.x']
+          python-version: '2.x'
+
+      - name: Configure Python (v. 3.x)
+        uses: actions/setup-python@v3
+        with:
+          python-version: '3.x'
 
       - name: Install Mock Library with pip
         run: pip install mock
