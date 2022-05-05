@@ -29,10 +29,12 @@ jobs:
         with:
           ruby-version: 2.4.2
 
-      - name: Configure NodeJS
-        uses: actions/setup-node@v3
-        with:
-          node-version: 8.9.3
+      # Sonar does not accept nodejs version below 14 :(
+      #
+      # - name: Configure NodeJS
+      #   uses: actions/setup-node@v3
+      #   with:
+      #     node-version: 8.9.3
 
       - name: Configure Python (v. 3.x)
         uses: actions/setup-python@v3
