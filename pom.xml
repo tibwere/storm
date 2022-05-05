@@ -286,6 +286,11 @@
         <license.thirdPartyFilename>DEPENDENCY-LICENSES</license.thirdPartyFilename>
         <license.outputDirectory>${project.basedir}</license.outputDirectory>
 
+        <!-- isw2 project -->
+        <sonar.coverage.jacoco.xmlReportPaths>${maven.multiModuleProjectDirectory}/storm-aggr-converage/target/site/jacoco-aggregate/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
+        <sonar.organization>tibwere</sonar.organization>
+        <sonar.host.url>https://sonarcloud.io</sonar.host.url>
+
         <!-- dependency versions -->
         <clojure.version>1.10.0</clojure.version>
         <commons-compress.version>1.21</commons-compress.version>
@@ -381,6 +386,9 @@
         <module>storm-clojure</module>
         <module>storm-clojure-test</module>
         <module>storm-submit-tools</module>
+
+        <!-- isw2 project -->
+        <module>storm-aggr-coverage</module>
     </modules>
 
     <dependencies>
@@ -704,6 +712,31 @@
                 <module>examples/storm-perf</module>
             </modules>
         </profile>
+
+        <!-- isw2 project -->
+        <profile>
+            <id>isw2-coverage</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.jacoco</groupId>
+                        <artifactId>jacoco-maven-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>prepare-agent</id>
+                                <goals>
+                                    <goal>prepare-agent</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+
     </profiles>
 
     <distributionManagement>
