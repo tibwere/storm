@@ -1221,30 +1221,30 @@
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-surefire-plugin</artifactId>
                     <version>${surefire.version}</version>
-                    <configuration>
-                        <redirectTestOutputToFile>true</redirectTestOutputToFile>
-                        <excludedGroups>IntegrationTest | ${java.unit.test.exclude.groups}</excludedGroups>
-                        <argLine>-Xmx3g -XX:+HeapDumpOnOutOfMemoryError</argLine>
-                        <trimStackTrace>false</trimStackTrace>
-                        <forkCount>1.0C</forkCount>
-                        <reuseForks>true</reuseForks>
-                        <systemPropertyVariables>
-                            <storm.home>${project.basedir}/target/testhome</storm.home>
-                        </systemPropertyVariables>
-                    </configuration>
+<!--                    <configuration>-->
+<!--                        <redirectTestOutputToFile>true</redirectTestOutputToFile>-->
+<!--                        <excludedGroups>IntegrationTest | ${java.unit.test.exclude.groups}</excludedGroups>-->
+<!--                        <argLine>-Xmx3g -XX:+HeapDumpOnOutOfMemoryError</argLine>-->
+<!--                        <trimStackTrace>false</trimStackTrace>-->
+<!--                        <forkCount>1.0C</forkCount>-->
+<!--                        <reuseForks>true</reuseForks>-->
+<!--                        <systemPropertyVariables>-->
+<!--                            <storm.home>${project.basedir}/target/testhome</storm.home>-->
+<!--                        </systemPropertyVariables>-->
+<!--                    </configuration>-->
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-failsafe-plugin</artifactId>
                     <version>${surefire.version}</version>
-                    <configuration>
-                        <redirectTestOutputToFile>true</redirectTestOutputToFile>
-                        <includes>
-                            <include>**/*.java</include>
-                        </includes>
-                        <groups>IntegrationTest</groups>
-                        <argLine>-Xmx1536m</argLine>
-                    </configuration>
+<!--                    <configuration>-->
+<!--                        <redirectTestOutputToFile>true</redirectTestOutputToFile>-->
+<!--                        <includes>-->
+<!--                            <include>**/*.java</include>-->
+<!--                        </includes>-->
+<!--                        <groups>IntegrationTest</groups>-->
+<!--                        <argLine>-Xmx1536m</argLine>-->
+<!--                    </configuration>-->
                     <executions>
                         <execution>
                             <goals>
