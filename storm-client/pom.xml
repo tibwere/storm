@@ -317,5 +317,42 @@
                 </plugins>
             </build>
         </profile>
+
+        <profile>
+            <id>ba-dua-coverage</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
+            <properties>
+                <!-- Use a stable version instead of SNAPSHOT one -->
+                <argLine>-javaagent:../dfc/ba-dua-agent-rt-0.6.0-all.jar -Doutput.file=target/badua.ser</argLine>
+            </properties>
+            <!-- Needed for generate the report -->
+            <build>
+                <plugins>
+
+                    <!-- Generate report in xml format -->
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>exec-maven-plugin</artifactId>
+                        <version>1.5.0</version>
+                        <executions>
+                            <execution>
+                                <id>Generate Ba-Dua report</id>
+                                <goals>
+                                    <goal>exec</goal>
+                                </goals>
+                                <phase>verify</phase>
+                                <configuration>
+                                    <workingDirectory>${project.basedir}</workingDirectory>
+                                    <executable>${project.basedir}/../dfc/generate-report.sh</executable>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+
+                </plugins>
+            </build>
+        </profile>
     </profiles>
 </project>
