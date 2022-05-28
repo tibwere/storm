@@ -51,7 +51,7 @@ public class WindowManagerTests {
         List<String> eventsList = Arrays.asList("isw2", "exam", "sw", "testing");
 
         return Arrays.asList(new Object[][]{
-                {2, Collections.emptyList()},
+                {1, Collections.emptyList()},
                 {3, eventsList},
                 {5, eventsList}
         });
