@@ -20,9 +20,13 @@ import java.util.Map;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
+/**
+ * Test cases for WindowedBoltExecutor class
+ *
+ * @author Simone Tiberi
+ */
 @RunWith(value = Parameterized.class)
 public class WindowedBoltExecutorTests {
 
@@ -42,6 +46,12 @@ public class WindowedBoltExecutorTests {
         this.configurations = configurations;
     }
 
+    /**
+     * BOUNDARY VALUE ANALYSIS
+     *  - isLate:               [TRUE, FALSE]
+     *  - configuration:        [VALID, EMPTY, NULL]
+     *  - expectedException:    [TRUE, FALSE]
+     */
     @Parameterized.Parameters
     public static Collection<Object[]> testCasesTuples() {
 
@@ -52,10 +62,17 @@ public class WindowedBoltExecutorTests {
                 // IS_LATE  CONFIGURATION       EXPECTED_EXCEPTION
                 {  true,    validConfig,        false   },
                 {  false,   validConfig,        false   },
-                {  true,    new HashMap<>(),    true    }
+                {  true,    new HashMap<>(),    true    },
+                {  true,    null,               true    }
         });
     }
 
+    /**
+     * Setup mocks for decorated instance of IWindowedBolt,
+     * Timestamp extractor and WaterMarkEventGenerator.
+     *
+     * in this phase the lateness of the tuple is set in a mocked way
+     */
     @Before
     public void setupEnvironment() {
         IWindowedBolt bolt = mock(IWindowedBolt.class);
@@ -80,10 +97,10 @@ public class WindowedBoltExecutorTests {
 
             this.executor.execute(tuple);
             int wantedNumberOfInvocation = (this.isLate) ? 1 : 0;
-            Mockito.verify(collector, Mockito.times(wantedNumberOfInvocation)).ack(tuple);
+            verify(collector, Mockito.times(wantedNumberOfInvocation)).ack(tuple);
 
             Assert.assertFalse("An \"IllegalArgumentException\" should be thrown", this.expectedException);
-        } catch (IllegalArgumentException e) {
+        } catch (IllegalArgumentException | NullPointerException e) {
             Assert.assertTrue("An exception should not be thrown", this.expectedException);
         }
     }
