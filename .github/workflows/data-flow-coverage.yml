@@ -1,4 +1,4 @@
-name: Apache Bookkeeper CI/CD (Data flow coverage)
+name: Apache Storm CI/CD (Data flow coverage)
 
 on: workflow_dispatch
 
@@ -26,7 +26,7 @@ jobs:
           key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-m2
 
-      - name: Verify Bookkeeper
+      - name: Verify Storm
         run: ./mvnw -B verify -P ba-dua-coverage
 
       - name: Upload ba-dua report
