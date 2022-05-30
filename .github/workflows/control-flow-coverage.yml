@@ -1,4 +1,4 @@
-name: Apache Storm CI/CD
+name: Apache Storm CI/CD (Control flow coverage)
 
 on:
   push:
