@@ -181,7 +181,6 @@ public class WindowedBoltExecutorTests {
                 executor.prepare(config, ctx, collector);
                 Assert.fail("This configuration should be wrong");
             }catch (IllegalArgumentException e) {
-                e.printStackTrace();
                 Assert.assertTrue(true);
             }
         }
