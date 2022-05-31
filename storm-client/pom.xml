@@ -354,5 +354,46 @@
                 </plugins>
             </build>
         </profile>
+
+        <profile>
+            <id>mutation-testing</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
+            <properties>
+                <withHistory>true</withHistory>
+                <pitest.version>1.8.0</pitest.version>
+            </properties>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.pitest</groupId>
+                        <artifactId>pitest-maven</artifactId>
+                        <version>${pitest.version}</version>
+                        <configuration>
+                            <targetClasses>
+                                <param>org.apache.storm.topology.WindowedBoltExecutor</param>
+                                <param>org.apache.storm.windowing.WindowManager</param>
+                            </targetClasses>
+                            <targetTests>
+                                <param>org.apache.storm.topology.WindowedBoltExecutorTests*</param>
+                                <param>org.apache.storm.windowing.WindowManagerTests*</param>
+                                <param>org.apache.storm.windowing.WindowedBoltExecutorWMRelatedTests*</param>
+                            </targetTests>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>Generate PIT report</id>
+                                <phase>test-compile</phase>
+                                <goals>
+                                    <goal>mutationCoverage</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+
     </profiles>
 </project>
