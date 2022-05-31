@@ -11,8 +11,7 @@ import org.junit.runners.Parameterized;
 import java.util.*;
 
 import static org.mockito.ArgumentMatchers.anyList;
-import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.*;
 
 /**
  * Test cases for WindowManager class
@@ -120,6 +119,19 @@ public class WindowManagerTests {
             windowManager.add(new WaterMarkEvent<>(10));
             Assert.assertTrue("A watermark event should not be enqueued",
                     windowManager.queue.isEmpty());
+        }
+    }
+
+    public static class TestCompaction {
+        @Test
+        public void testAdditionShouldTriggerCompaction() {
+            WindowManager<String> windowManager = spy(new WindowManager<>(mock(WindowLifecycleListener.class)));
+            CountEvictionPolicy<String> evictionPolicy = new CountEvictionPolicy<>(5);
+            windowManager.setEvictionPolicy(evictionPolicy);
+            windowManager.setTriggerPolicy(new CountTriggerPolicy<>(TRIGGER_WINDOW, windowManager, evictionPolicy));
+
+            windowManager.add("test-addition");
+            verify(windowManager, times(1)).compactWindow();
         }
     }
 

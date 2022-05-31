@@ -49,16 +49,24 @@ public class WindowedBoltExecutorTests {
         return windowedBoltExecutor.getWindowManager();
     }
 
-    public static WindowManager<Tuple> getPreparedAndExecutedWMWithoutTSE() {
+    public static WindowManager<Tuple> getPreparedAndExecutedWM(boolean needExtractor, WaterMarkEventGenerator waterMarkEventGenerator) {
         TopologyContext ctx = mock(TopologyContext.class);
         OutputCollector coll = mock(OutputCollector.class);
         IWindowedBolt bolt = mock(IWindowedBolt.class);
+        if (needExtractor) {
+            TimestampExtractor ex = mock(TimestampExtractor.class);
+            when(bolt.getTimestampExtractor()).thenReturn(ex);
+        }
 
         Map<String, Object> simpleConfig = new HashMap<>();
         simpleConfig.put(Config.TOPOLOGY_BOLTS_WINDOW_LENGTH_COUNT, 1);
 
         WindowedBoltExecutor windowedBoltExecutor = new WindowedBoltExecutor(bolt);
         windowedBoltExecutor.prepare(simpleConfig, ctx, coll);
+
+        if (waterMarkEventGenerator != null)
+            windowedBoltExecutor.waterMarkEventGenerator = waterMarkEventGenerator;
+
         windowedBoltExecutor.execute(mock(Tuple.class));
 
         return windowedBoltExecutor.getWindowManager();
@@ -71,6 +79,7 @@ public class WindowedBoltExecutorTests {
         private Map<String, Object> configurations;
         private WaterMarkEventGenerator waterMarkEventGenerator;
         private WindowedBoltExecutor executor;
+        private IWindowedBolt mockedDelegatedBolt;
 
         public LatenessTests(boolean isLate, Map<String, Object> configurations, boolean expectedException) {
             configure(isLate, configurations, expectedException);
@@ -99,6 +108,11 @@ public class WindowedBoltExecutorTests {
             ltsSpecified.put(Config.TOPOLOGY_BOLTS_WINDOW_LENGTH_COUNT, 1);
             ltsSpecified.put(Config.TOPOLOGY_BOLTS_LATE_TUPLE_STREAM, "test-stream");
 
+            Map<String, Object> invalidMap = new HashMap<>();
+            invalidMap.put(Config.TOPOLOGY_MESSAGE_TIMEOUT_SECS, 10);
+            invalidMap.put(Config.TOPOLOGY_BOLTS_WINDOW_LENGTH_DURATION_MS, 10000);
+            invalidMap.put(Config.TOPOLOGY_BOLTS_SLIDING_INTERVAL_DURATION_MS, 5000);
+
 
             return Arrays.asList(new Object[][]{
                     // IS_LATE  CONFIGURATION       EXPECTED_EXCEPTION
@@ -106,7 +120,8 @@ public class WindowedBoltExecutorTests {
                     {  false,   validConfig,        false   },
                     {  true,    new HashMap<>(),    true    },
                     {  true,    null,               true    },
-                    {  true,    ltsSpecified,       false   }
+                    {  true,    ltsSpecified,       false   },
+                    {  false,   invalidMap,         true    }
             });
         }
 
@@ -118,14 +133,14 @@ public class WindowedBoltExecutorTests {
          */
         @Before
         public void setupEnvironment() {
-            IWindowedBolt bolt = mock(IWindowedBolt.class);
+            this.mockedDelegatedBolt = mock(IWindowedBolt.class);
             TimestampExtractor tsExtractor = mock(TimestampExtractor.class);
-            when(bolt.getTimestampExtractor()).thenReturn(tsExtractor);
+            when(mockedDelegatedBolt.getTimestampExtractor()).thenReturn(tsExtractor);
 
             this.waterMarkEventGenerator = mock(WaterMarkEventGenerator.class);
             when(this.waterMarkEventGenerator.track(any(), anyLong())).thenReturn(!this.isLate);
 
-            this.executor = new WindowedBoltExecutor(bolt);
+            this.executor = new WindowedBoltExecutor(this.mockedDelegatedBolt);
         }
 
         @Test
@@ -142,6 +157,8 @@ public class WindowedBoltExecutorTests {
 
             try {
                 executor.prepare(this.configurations, ctx, collector);
+                verify(this.mockedDelegatedBolt, times(1)).prepare(
+                        eq(this.configurations), eq(ctx), any());
                 this.executor.waterMarkEventGenerator = this.waterMarkEventGenerator;
 
                 this.executor.execute(tuple);
@@ -153,8 +170,7 @@ public class WindowedBoltExecutorTests {
                 }
 
                 verify(collector, times(wantedNumberOfInvocation)).ack(tuple);
-
-                Assert.assertFalse("An \"IllegalArgumentException\" should be thrown", this.expectedException);
+                Assert.assertFalse("An exception should be thrown", this.expectedException);
             } catch (IllegalArgumentException | NullPointerException e) {
                 Assert.assertTrue("An exception should not be thrown instead " +
                                 e.getClass().getName() + " -> " + e.getMessage(),
@@ -183,6 +199,19 @@ public class WindowedBoltExecutorTests {
             }catch (IllegalArgumentException e) {
                 Assert.assertTrue(true);
             }
+        }
+    }
+
+    public static class TestStartedExecutor {
+
+        @Test
+        public void testStartShouldBeInvoked() {
+            IWindowedBolt bolt = mock(IWindowedBolt.class);
+            WindowedBoltExecutor spiedExecutor = spy(new WindowedBoltExecutor(bolt));
+            Map<String, Object> simpleConfiguration = new HashMap<>();
+            simpleConfiguration.put(Config.TOPOLOGY_BOLTS_WINDOW_LENGTH_COUNT, 1);
+            spiedExecutor.prepare(simpleConfiguration, mock(TopologyContext.class), mock(OutputCollector.class));
+            verify(spiedExecutor, times(1)).start();
         }
     }
 }

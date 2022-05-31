@@ -14,6 +14,11 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
 @RunWith(value = Enclosed.class)
 public class WindowedBoltExecutorWMRelatedTests {
 
@@ -116,11 +121,21 @@ public class WindowedBoltExecutorWMRelatedTests {
                     (windowManager instanceof StatefulWindowManager));
         }
 
+        private void testAddition(WindowManager wm) {
+            Assert.assertEquals("The tuple should be enqueued", 1, wm.queue.size());
+        }
+
         /* for execute */
         @Test
         public void testNoTSExtractorAddition() {
-            WindowManager<Tuple> windowManager = WindowedBoltExecutorTests.getPreparedAndExecutedWMWithoutTSE();
-            Assert.assertEquals("The tuple should be enqueued", 1, windowManager.queue.size());
+            testAddition(WindowedBoltExecutorTests.getPreparedAndExecutedWM(false, null));
+        }
+
+        @Test
+        public void testInTimeTupleAddition() {
+            WaterMarkEventGenerator waterMarkEventGenerator = mock(WaterMarkEventGenerator.class);
+            when(waterMarkEventGenerator.track(any(), anyLong())).thenReturn(true);
+            testAddition(WindowedBoltExecutorTests.getPreparedAndExecutedWM(true, waterMarkEventGenerator));
         }
     }
 
